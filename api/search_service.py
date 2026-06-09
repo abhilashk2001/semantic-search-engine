@@ -7,6 +7,7 @@ Knows nothing about HTTP — that lives in :mod:`api.main`.
 
 from __future__ import annotations
 
+import random
 import time
 
 import numpy as np
@@ -16,6 +17,7 @@ from engine import HNSWIndex
 from .embedding import Embedder
 from .schemas import (
     BenchmarkResponse,
+    SampleResponse,
     SearchResponse,
     SearchResultItem,
     StatsResponse,
@@ -75,6 +77,17 @@ class SearchService:
         ]
         return SearchResponse(
             results=results, latency_ms=latency_ms, k=k, ef_search=ef_search
+        )
+
+    # ------------------------------------------------------------------ #
+    # Random sample (powers the "Surprise me" button)
+    # ------------------------------------------------------------------ #
+    def random_paragraph(self) -> SampleResponse:
+        if not self.index.nodes:
+            raise ValueError("Index is empty; nothing to sample.")
+        node_id = random.choice(list(self.index.nodes))
+        return SampleResponse(
+            id=node_id, text=self.index.nodes[node_id].metadata.get("text")
         )
 
     # ------------------------------------------------------------------ #

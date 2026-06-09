@@ -8,6 +8,7 @@ vi.mock("./api", () => ({
   api: {
     baseUrl: "http://test",
     search: vi.fn(),
+    sample: vi.fn(),
     stats: vi.fn(),
     benchmark: vi.fn(),
     health: vi.fn(),

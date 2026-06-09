@@ -82,6 +82,13 @@ def create_app(service: SearchService | None = None) -> FastAPI:
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.get("/sample", response_model=schemas.SampleResponse)
+    def sample(request: Request):
+        try:
+            return get_service(request).random_paragraph()
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
     @app.get("/stats", response_model=schemas.StatsResponse)
     def stats(request: Request):
         return get_service(request).stats()

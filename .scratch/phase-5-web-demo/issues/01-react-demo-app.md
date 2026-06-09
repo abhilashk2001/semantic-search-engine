@@ -34,6 +34,6 @@ Branch `phase-5-web-demo`; commit when acceptance passes.
 - Scaffolded `web/` (Vite 6 + React 18 + TS + Tailwind v4 via `@tailwindcss/vite`), dark single page.
 - `src/api.ts` typed client (base URL from `VITE_API_BASE_URL`); components SearchBar, Controls (ef/k sliders), ResultsList (score bars + latency badge), StatsPanel (layer distribution bars), BenchmarkChart (Recharts from static `results.json` + live recall button), SurpriseButton. App wires debounced live search + cold-start "waking" state.
 - Benchmark JSON: `web/src/data/results.json` committed; `sync:benchmark` npm prebuild/predev script re-copies from `../benchmarks` so it stays fresh. Chart renders statically even when the backend is asleep.
-- Surprise me: picks from a curated example-query list (no backend `/sample` endpoint needed) — a small, documented deviation from "random paragraph".
+- Surprise me: backed by a real `GET /sample` endpoint that returns a random corpus paragraph; the button fetches it and searches its nearest neighbors (faithful to the brief). (Superseded the earlier curated-list approach at the user's request.)
 - Tests: 6 vitest/RTL (api payload + error, App stats render, type→search, slider→debounced re-search, chart render). Typecheck clean; production build OK (158 KB gzip).
 - Live integration verified: backend on real index.pkl, dev server boots, CORS preflight + cross-origin POST /search succeed with correct results in ~1ms.

@@ -99,6 +99,12 @@ def test_stats(client):
     assert sum(body["layer_distribution"].values()) >= 200  # layer 0 holds all
 
 
+def test_sample_returns_a_real_corpus_paragraph(client):
+    body = client.get("/sample").json()
+    assert 0 <= body["id"] < 200
+    assert body["text"].startswith("paragraph number")
+
+
 def test_benchmark_returns_recall_in_unit_interval(client):
     body = client.post("/benchmark", json={"n_queries": 10}).json()
     assert 0.0 <= body["recall_at_k"] <= 1.0

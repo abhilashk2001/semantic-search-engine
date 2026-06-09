@@ -46,6 +46,11 @@ class StatsResponse(BaseModel):
     config: dict
 
 
+class SampleResponse(BaseModel):
+    id: int
+    text: str | None = None
+
+
 class BenchmarkRequest(BaseModel):
     n_queries: int = Field(default=10, ge=1, le=100)
 

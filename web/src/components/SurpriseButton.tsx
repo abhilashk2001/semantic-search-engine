@@ -1,33 +1,33 @@
-const EXAMPLES = [
-  "how do volcanoes erupt",
-  "effects of climate change on the planet",
-  "famous classical music composers",
-  "how does the human heart work",
-  "the history of ancient Rome",
-  "what causes the northern lights",
-  "how do airplanes stay in the air",
-  "the life cycle of a star",
-  "why is the ocean salty",
-  "how vaccines protect against disease",
-  "the rules of the game of chess",
-  "how photosynthesis works in plants",
-];
+import { useState } from "react";
+import { api } from "../api";
 
 interface Props {
   onPick: (query: string) => void;
 }
 
 export function SurpriseButton({ onPick }: Props) {
-  function surprise() {
-    const choice = EXAMPLES[Math.floor(Math.random() * EXAMPLES.length)];
-    onPick(choice);
+  const [loading, setLoading] = useState(false);
+
+  async function surprise() {
+    setLoading(true);
+    try {
+      const paragraph = await api.sample();
+      onPick(paragraph.text);
+    } catch {
+      /* leave the query unchanged on failure */
+    } finally {
+      setLoading(false);
+    }
   }
+
   return (
     <button
       onClick={surprise}
-      className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/10"
+      disabled={loading}
+      title="Pick a random Wikipedia paragraph and find its nearest neighbors"
+      className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/10 disabled:opacity-50"
     >
-      ✨ Surprise me
+      {loading ? "picking…" : "✨ Surprise me"}
     </button>
   );
 }

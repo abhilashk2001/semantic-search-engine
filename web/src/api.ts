@@ -39,6 +39,7 @@ async function getJson<T>(path: string): Promise<T> {
 export const api = {
   baseUrl: BASE_URL,
   search: (params: SearchParams) => postJson<SearchResponse>("/search", params),
+  sample: () => getJson<{ id: number; text: string }>("/sample"),
   stats: () => getJson<StatsResponse>("/stats"),
   benchmark: (n_queries = 20) =>
     postJson<BenchmarkResponse>("/benchmark", { n_queries }),
