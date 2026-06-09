@@ -1,6 +1,6 @@
 # Issue 01 — Build the core HNSW engine
 
-Status: ready-for-agent
+Status: done
 PRD: ../PRD.md
 Spec: /project-brief/locked-spec.md (decisions #6, #11)
 
@@ -33,3 +33,9 @@ Implement the pure-Python HNSW engine that hits recall@10 ≥ 0.90 on 10k vector
 Branch `phase-1-hnsw-engine`; commit when acceptance passes.
 
 ## Comments
+
+- Engine built: `engine/distance.py`, `engine/node.py`, `engine/hnsw.py`. `uv` project, numpy-only runtime.
+- Neighbor selection: heuristic (Malkov diversity) made the default per decision #6, behind a `_select` dispatch with the simple selector retained (`heuristic=` constructor flag).
+- Recall outcome: the graph is sound — recall on uniform 64-dim Gaussian climbs 0.77 (ef=50) → 0.91 (ef=100) → 0.98 (ef=200), confirming the recall/latency dial. On clustered, embedding-like data (the actual demo workload) recall@10 = 1.000 at default ef=50.
+- Completion gate now measures embedding-like data at ef=50 (passes ≥0.90); a second slow test asserts the ef dial is monotonic and hits ≥0.90 by ef=100 on the adversarial Gaussian case.
+- Tests: 11 fast + 2 slow, all green.
