@@ -1,6 +1,6 @@
 # Issue 01 — Dataset, embeddings, and artifacts
 
-Status: ready-for-agent
+Status: done
 PRD: ../PRD.md
 Spec: /project-brief/locked-spec.md (decisions #2, #3, #4, #7, #10)
 
@@ -26,3 +26,10 @@ Offline pipeline producing the two shippable artifacts: `index.pkl` and `benchma
 Branch `phase-4-data-pipeline`; commit when acceptance passes (artifacts git-ignored).
 
 ## Comments
+
+- Scripts: `scripts/_corpus.py` (pure helpers), `download_data.py` (streams `wikimedia/wikipedia` 20231101.simple), `build_index.py`, `run_benchmark.py`. `datasets`/`fastembed` isolated in the `[data]` extra.
+- Real run: 10,000 unique clean paragraphs (min 150 / avg 346 chars); embedded with fastembed all-MiniLM-L6-v2; index built in 23.7s; `index.pkl` = 20 MB (git-ignored).
+- Benchmark on real embeddings: recall@10 = 0.985 @ ef=10 (0.26ms p50) → 1.000 @ ef=50 (0.84ms). Written to `benchmarks/results.json` (committed).
+- End-to-end smoke with the real model returned semantically correct results in ~1–2ms (climate/composers/volcanoes).
+- Engine: `build_time_ms` now persisted in the artifact and surfaced via `/stats`. Tests: `test_corpus.py` added; full fast suite 31 passed.
+- recall@10 ≥ 0.90 on real data — no need to revisit the neighbor selector.

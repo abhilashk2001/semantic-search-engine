@@ -69,6 +69,9 @@ class HNSWIndex:
         self.entry_point: int | None = None
         self.max_layer: int = 0
         self._next_id: int = 0
+        # Optional: wall-clock build time, set by the offline build script and
+        # persisted so /stats can report it after a load.
+        self.build_time_ms: float | None = None
 
     # ------------------------------------------------------------------ #
     # Public API
@@ -177,6 +180,7 @@ class HNSWIndex:
             "entry_point": self.entry_point,
             "max_layer": self.max_layer,
             "next_id": self._next_id,
+            "build_time_ms": self.build_time_ms,
             "rng_state": self._rng.getstate(),
             "nodes": {
                 nid: {
@@ -220,6 +224,7 @@ class HNSWIndex:
         index.entry_point = state["entry_point"]
         index.max_layer = state["max_layer"]
         index._next_id = state["next_id"]
+        index.build_time_ms = state.get("build_time_ms")
         index._rng.setstate(state["rng_state"])
         index.nodes = {
             nid: Node(

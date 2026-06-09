@@ -39,7 +39,11 @@ class SearchService:
     ) -> None:
         self.index = index
         self.embedder = embedder
-        self.build_time_ms = build_time_ms
+        # Prefer an explicit value; otherwise use the build time persisted in the
+        # index artifact (set by the offline build script).
+        self.build_time_ms = (
+            build_time_ms if build_time_ms is not None else index.build_time_ms
+        )
 
     # ------------------------------------------------------------------ #
     # Search
