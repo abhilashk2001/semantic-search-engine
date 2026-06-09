@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "sync:benchmark": "node -e \"require('fs').copyFileSync('../benchmarks/results.json','src/data/results.json')\"",
+    "sync:benchmark": "node -e \"try{require('fs').copyFileSync('../benchmarks/results.json','src/data/results.json')}catch(e){console.warn('benchmark sync skipped:',e.message)}\"",
     "predev": "npm run sync:benchmark",
     "dev": "vite",
     "prebuild": "npm run sync:benchmark",

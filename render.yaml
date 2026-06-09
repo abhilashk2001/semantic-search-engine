@@ -1,0 +1,24 @@
+# Render Blueprint for the backend API.
+# Connect this repo in the Render dashboard ("New +" -> "Blueprint") and Render
+# reads this file. The index is built at deploy time from the committed corpus
+# (data/corpus.jsonl) — no dataset download, only the embedding model is fetched.
+services:
+  - type: web
+    name: semantic-search-api
+    runtime: python
+    plan: free
+    healthCheckPath: /health
+    buildCommand: |
+      pip install uv
+      uv sync --extra api --frozen
+      uv run python -m scripts.build_index
+    startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # Restrict to the Vercel frontend origin once it is deployed.
+      # e.g. https://semantic-search-engine.vercel.app
+      - key: VECLITE_CORS_ORIGINS
+        value: "*"
+      - key: VECLITE_INDEX_PATH
+        value: index.pkl
