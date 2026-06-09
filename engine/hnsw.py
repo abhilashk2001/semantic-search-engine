@@ -13,12 +13,16 @@ from __future__ import annotations
 
 import heapq
 import math
+import pickle
 import random
 
 import numpy as np
 
 from .distance import METRICS, get_distance, prepare_vector
 from .node import Node
+
+# Bump when the serialized layout changes incompatibly.
+FORMAT_VERSION = 1
 
 
 class HNSWIndex:
@@ -149,6 +153,85 @@ class HNSWIndex:
         for dist, nid in candidates[:k]:
             results.append((nid, dist, self.nodes[nid].metadata))
         return results
+
+    # ------------------------------------------------------------------ #
+    # Persistence
+    # ------------------------------------------------------------------ #
+    def save(self, filepath) -> None:
+        """Serialize the full index to ``filepath`` via pickle.
+
+        Stores a plain dict (config, nodes, graph state, RNG state) rather than
+        the live object directly, so the artifact is inspectable and guarded by
+        a format version. A loaded index returns identical search results.
+        """
+        state = {
+            "format_version": FORMAT_VERSION,
+            "config": {
+                "dim": self.dim,
+                "metric": self.metric,
+                "M": self.M,
+                "ef_construction": self.ef_construction,
+                "seed": self.seed,
+                "heuristic": self.heuristic,
+            },
+            "entry_point": self.entry_point,
+            "max_layer": self.max_layer,
+            "next_id": self._next_id,
+            "rng_state": self._rng.getstate(),
+            "nodes": {
+                nid: {
+                    "id": node.id,
+                    "vector": node.vector,
+                    "metadata": node.metadata,
+                    "level": node.level,
+                    "connections": node.connections,
+                }
+                for nid, node in self.nodes.items()
+            },
+        }
+        with open(filepath, "wb") as fh:
+            pickle.dump(state, fh, protocol=pickle.HIGHEST_PROTOCOL)
+
+    @classmethod
+    def load(cls, filepath) -> "HNSWIndex":
+        """Reconstruct an index previously written by :meth:`save`.
+
+        Raises ``FileNotFoundError`` if the path is missing and ``ValueError``
+        if the file is corrupt or written by an incompatible format version.
+        """
+        try:
+            with open(filepath, "rb") as fh:
+                state = pickle.load(fh)
+        except FileNotFoundError:
+            raise
+        except (pickle.UnpicklingError, EOFError, OSError) as exc:
+            raise ValueError(f"Could not read index file {filepath!r}: {exc}") from exc
+
+        if not isinstance(state, dict) or "format_version" not in state:
+            raise ValueError(f"{filepath!r} is not a valid VecLite index file.")
+        version = state["format_version"]
+        if version != FORMAT_VERSION:
+            raise ValueError(
+                f"Index format version {version} is not supported "
+                f"(expected {FORMAT_VERSION})."
+            )
+
+        index = cls(**state["config"])
+        index.entry_point = state["entry_point"]
+        index.max_layer = state["max_layer"]
+        index._next_id = state["next_id"]
+        index._rng.setstate(state["rng_state"])
+        index.nodes = {
+            nid: Node(
+                id=raw["id"],
+                vector=raw["vector"],
+                metadata=raw["metadata"],
+                level=raw["level"],
+                connections=raw["connections"],
+            )
+            for nid, raw in state["nodes"].items()
+        }
+        return index
 
     # ------------------------------------------------------------------ #
     # Internals

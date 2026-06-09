@@ -1,6 +1,6 @@
 # Issue 01 — Index persistence (save/load)
 
-Status: ready-for-agent
+Status: done
 PRD: ../PRD.md
 Spec: /project-brief/locked-spec.md (decision #4)
 
@@ -26,3 +26,8 @@ Serialize and restore a full HNSW index losslessly, enabling sub-second boot fro
 Branch `phase-2-persistence`; commit when acceptance passes.
 
 ## Comments
+
+- `HNSWIndex.save`/`load` added: pickle a plain versioned dict (`FORMAT_VERSION=1`) of config, nodes, graph state, and RNG state — not the live object — so the artifact is inspectable and version-guarded.
+- RNG state (not just the seed) is persisted, so inserts after a load continue the exact build sequence; verified by a test.
+- Errors: missing path → `FileNotFoundError`; corrupt/unreadable → `ValueError`; version mismatch → `ValueError`.
+- Tests: 6 new (round-trip identity of ids/distances/order, metadata survival, post-load insert reproducibility, 3 error cases). Full fast suite 17 passed.
