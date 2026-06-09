@@ -1,4 +1,4 @@
-# VecLite
+# Semantic Search Engine from Scratch
 
 A lightweight, dependency-free vector search engine built from scratch. It implements the
 **Hierarchical Navigable Small World (HNSW)** approximate nearest-neighbor algorithm in pure
@@ -11,7 +11,7 @@ demo.
 
 | Path | Role |
 |------|------|
-| `engine/` | Pure-Python HNSW index — the core, with no web or embedding dependencies |
+| `engine/` | Pure-Python HNSW index, the core, with no web or embedding dependencies |
 | `api/` | FastAPI service over the engine (later phase) |
 | `web/` | React + TypeScript demo app (later phase) |
 | `scripts/` | Offline data, embedding, and benchmark pipeline (later phase) |
