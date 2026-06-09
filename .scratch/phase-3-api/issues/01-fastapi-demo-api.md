@@ -1,6 +1,6 @@
 # Issue 01 — FastAPI demo API
 
-Status: ready-for-agent
+Status: done
 PRD: ../PRD.md
 Spec: /project-brief/locked-spec.md (decisions #3, #7, #8)
 
@@ -32,3 +32,9 @@ Expose the engine over a focused, validated REST API that embeds query text serv
 Branch `phase-3-api`; commit when acceptance passes.
 
 ## Comments
+
+- Built `api/embedding.py` (fastembed wrapper, imported lazily so it never loads in tests), `api/schemas.py` (Pydantic v2), `api/search_service.py` (HTTP-free service over the engine), `api/main.py` (app + injectable lifespan).
+- `create_app(service=None)`: prod loads `index.pkl` + fastembed on startup; tests inject a `SearchService` with a `StubEmbedder`, so unit tests download no model.
+- `/search` is text-first with a raw-vector fallback; exactly-one-input enforced by a Pydantic `model_validator`; wrong vector dim → 400; out-of-range k/ef → 422. `/stats`, `/benchmark` (small live recall check), `/health` complete the surface. CORS origins via `VECLITE_CORS_ORIGINS`.
+- Deps split: `[api]` (fastapi, uvicorn, fastembed) vs `[dev]` (pytest, fastapi, httpx). No torch.
+- Tests: 8 API contract tests; full fast suite 25 passed.
