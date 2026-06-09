@@ -57,12 +57,14 @@ export default function App() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          Vec<span className="text-indigo-400">Lite</span>
+          Semantic Search Engine{" "}
+          <span className="text-indigo-400">from Scratch</span>
         </h1>
         <p className="mt-2 max-w-2xl text-gray-400">
-          Live semantic search over 10,000 Wikipedia paragraphs, powered by a{" "}
-          <span className="text-gray-200">from-scratch HNSW vector index</span> —
-          no vector-search libraries. Type a phrase and find by meaning.
+          Live semantic search over 10,000 Wikipedia paragraphs. It runs on an{" "}
+          <span className="text-gray-200">HNSW vector index I wrote myself</span>,
+          with no vector-search libraries doing the work. Type a phrase and it
+          finds results by meaning instead of matching keywords.
         </p>
       </header>
 
