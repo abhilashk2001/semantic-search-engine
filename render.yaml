@@ -13,6 +13,22 @@ services:
       uv sync --extra api --frozen
       uv run python -m scripts.build_index
     startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    # Only rebuild the backend (and re-embed the corpus) when backend code or
+    # data changes. README and frontend edits do not trigger a redeploy.
+    buildFilter:
+      paths:
+        - engine/**
+        - api/**
+        - scripts/**
+        - data/**
+        - pyproject.toml
+        - uv.lock
+        - render.yaml
+      ignoredPaths:
+        - web/**
+        - "**/*.md"
+        - .github/**
+        - .scratch/**
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"

@@ -7,8 +7,12 @@ and Chroma, written with NumPy and the standard library only. No vector-search
 libraries do the actual work. On top of the engine sits a FastAPI service and a
 React app that lets you search 10,000 Wikipedia paragraphs by meaning.
 
-- **Live demo:** _link added after deploy_
-- **API:** _link added after deploy_
+- **Live demo:** https://semantic-search-engine-virid.vercel.app
+- **API:** https://semantic-search-api-223g.onrender.com (try `/stats` or `/health`)
+
+> The API runs on a free Render instance that sleeps when idle, so the first
+> request after a nap takes 30 to 60 seconds to wake. The app shows a waking
+> message while that happens.
 
 ## What it does
 
